@@ -1,3 +1,5 @@
+// app/api/google/accounts/route.ts
+
 import { google } from "googleapis";
 import { getAuthClient } from "@/app/lib/googleAuth";
 
