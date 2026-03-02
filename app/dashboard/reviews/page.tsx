@@ -21,19 +21,19 @@ export default function ReviewsPage() {
 
   return (
     <div className="p-10">
-      <h1 className="text-2xl font-bold mb-6">
+      <h1 className="text-2xl font-bold mb-6 text-zinc-900">
         Reviews
       </h1>
 
       {reviews.map((review, index) => (
         <div key={index} className="bg-white p-6 mb-4 rounded-lg shadow">
-          <p className="font-semibold">
+          <p className="font-semibold text-zinc-900">
             ⭐ {review.starRating}
           </p>
 
-          <p className="mt-2">{review.comment}</p>
+          <p className="mt-2 text-zinc-900">{review.comment}</p>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-800 mt-2">
             {review.reviewer?.displayName}
           </p>
         </div>

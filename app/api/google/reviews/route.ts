@@ -18,6 +18,10 @@ export async function GET(req: Request) {
     // ✅ get auth from cookies
     const auth = await getAuthClient();
 
+    if (!auth) {
+      return Response.json({ error: "Authentication failed" });
+    }
+
     // 1️⃣ Get accountId
     const accountService = google.mybusinessaccountmanagement({
       version: "v1",
@@ -49,10 +53,11 @@ export async function GET(req: Request) {
       reviews: res.data.reviews || [],
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Reviews error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return Response.json({
-      error: error.response?.data || error.message,
+      error: errorMessage,
     }, { status: 500 });
   }
 }

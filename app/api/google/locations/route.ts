@@ -5,6 +5,10 @@ import { getAuthClient } from "@/app/lib/googleAuth";
 export async function GET() {
   const auth = await getAuthClient();
 
+  if (!auth) {
+    return Response.json({ error: "Authentication failed" }, { status: 401 });
+  }
+
   const accountService = google.mybusinessaccountmanagement({
     version: "v1",
     auth,

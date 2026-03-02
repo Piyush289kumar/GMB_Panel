@@ -29,7 +29,7 @@ export default function Dashboard() {
               {loc.storefrontAddress?.addressLines?.join(", ")}
             </p>
 
-            <p className="mt-2 text-sm">
+            <p className="mt-2 text-sm text-zinc-900">
               📞 {loc.phoneNumbers?.primaryPhone}
             </p>
 
