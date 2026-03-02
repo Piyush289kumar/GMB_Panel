@@ -1,20 +1,32 @@
+// app/api/google/reply/route.ts
+
+import axios from "axios";
+import { globalTokens } from "../../auth/callback/route";
 import { google } from "googleapis";
-import { getAuthClient } from "@/app/lib/googleAuth";
 
 export async function POST(req: Request) {
   const { reviewName, comment } = await req.json();
+  // reviewName example:
+  // accounts/123/locations/456/reviews/789
 
-  const auth = getAuthClient();
+  try {
+    const url = `https://mybusiness.googleapis.com/v4/${reviewName}/reply`;
 
-  const mybusiness = google.mybusiness({
-    version: "v4",
-    auth,
-  });
+    const res = await axios.put(
+      url,
+      { comment },
+      {
+        headers: {
+          Authorization: `Bearer ${globalTokens.access_token}`,
+        },
+      }
+    );
 
-  const res = await mybusiness.accounts.locations.reviews.updateReply({
-    name: `${reviewName}/reply`,
-    requestBody: { comment },
-  });
+    return Response.json(res.data);
 
-  return Response.json(res.data);
+  } catch (error: any) {
+    return Response.json({
+      error: error.response?.data || error.message,
+    });
+  }
 }

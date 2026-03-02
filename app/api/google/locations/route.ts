@@ -3,7 +3,7 @@ import { google } from "googleapis";
 import { getAuthClient } from "@/app/lib/googleAuth";
 
 export async function GET() {
-  const auth = getAuthClient();
+  const auth = await getAuthClient();
 
   const accountService = google.mybusinessaccountmanagement({
     version: "v1",

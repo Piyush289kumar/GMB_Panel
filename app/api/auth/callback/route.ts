@@ -1,8 +1,7 @@
 // app/api/auth/callback/route.ts
 
 import { google } from "googleapis";
-
-let globalTokens: any = null;
+import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -16,9 +15,10 @@ export async function GET(req: Request) {
 
   const { tokens } = await oauth2Client.getToken(code as string);
 
-  globalTokens = tokens;
+  // ✅ Store tokens in secure cookie
+  (await cookies()).set("google_tokens", JSON.stringify(tokens), {
+    httpOnly: true,
+  });
 
   return Response.redirect("http://localhost:3000/dashboard");
 }
-
-export { globalTokens };
