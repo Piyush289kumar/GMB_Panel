@@ -36,16 +36,53 @@ export async function POST(req: Request) {
     });
 
     const accounts = await accountService.accounts.list();
-    const accountId = accounts.data.accounts?.[0]?.name;
+    const accountList = accounts.data.accounts || [];
+
+    let accountId: string | null = null;
+
+    for (const acc of accountList) {
+      const locationsRes = await axios.get(
+        `https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          params: { readMask: "name" },
+        },
+      );
+
+      const locations = locationsRes.data.locations || [];
+
+      if (locations.find((l: any) => l.name === locationName)) {
+        accountId = acc.name;
+        break;
+      }
+    }
 
     if (!accountId) {
-      return Response.json({ error: "No account found" }, { status: 400 });
+      return Response.json(
+        { error: "Correct account not found for this location" },
+        { status: 400 },
+      );
     }
+
+    console.log("Correct parent account:", accountId);
 
     const locationId = locationName.split("/")[1];
 
+    // const locationCheck = await axios.get(
+    //   `https://mybusiness.googleapis.com/v4/${accountId}/locations/${locationId}`,
+    //   {
+    //     headers: { Authorization: `Bearer ${accessToken}` },
+    //   },
+    // );
+
+    // console.log("Location parent verified:", locationCheck.data.name);
+
+    console.log(
+      "START UPLOAD URL:",
+      `https://mybusiness.googleapis.com/v4/${accountId}/locations/${locationId}/media:startUpload`,
+    );
     // ✅ STEP 1 — Start Upload
-    console.log("STEP 1 - startUpload success");
+    console.log("STEP 1 - startUpload success - Start");
     const startUpload = await axios.post(
       `https://mybusiness.googleapis.com/v4/${accountId}/locations/${locationId}/media:startUpload`,
       {},
@@ -60,7 +97,7 @@ export async function POST(req: Request) {
     const resourceName = startUpload.data.resourceName;
 
     // ✅ STEP 2 — Upload Raw Bytes (CRITICAL FIX)
-    console.log("STEP 2 - upload bytes success");
+    console.log("STEP 2 - upload bytes success - Start");
     const buffer = Buffer.from(await file.arrayBuffer());
 
     await axios.post(
@@ -69,7 +106,7 @@ export async function POST(req: Request) {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": file.type || "image/jpeg",
+          "Content-Type": "image/png",
           "Content-Length": buffer.length,
         },
         maxBodyLength: Infinity,
@@ -79,16 +116,16 @@ export async function POST(req: Request) {
     console.log("STEP 2 - upload bytes success - End");
 
     // ✅ STEP 3 — Create Media Entry
-    console.log("STEP 3 - create media success");
+    console.log("STEP 3 - create media success - Start");
     const createMedia = await axios.post(
-      `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/media`,
+      `https://mybusiness.googleapis.com/v4/${accountId}/locations/${locationId}/media`,
       {
         mediaFormat: "PHOTO",
         locationAssociation: {
           category: "ADDITIONAL",
         },
         dataRef: {
-          resourceName,
+          resourceName: "GoogleProvidedValue",
         },
       },
       {
