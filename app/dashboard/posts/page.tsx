@@ -1,0 +1,1 @@
+// app/dashboard/posts/page.tsx

@@ -33,16 +33,29 @@ export default function Dashboard() {
               📞 {loc.phoneNumbers?.primaryPhone}
             </p>
 
-            <p className="mt-2 text-sm text-blue-600">
-              {loc.websiteUri}
-            </p>
+            <p className="mt-2 text-sm text-blue-600">{loc.websiteUri}</p>
 
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <Link
                 href={`/dashboard/reviews?location=${loc.name}`}
                 className="text-sm text-white bg-black px-3 py-2 rounded-lg"
               >
                 Manage
+              </Link>
+            </div> */}
+            <div className="mt-4 flex gap-3">
+              <Link
+                href={`/dashboard/reviews?location=${loc.name}`}
+                className="text-sm text-white bg-black px-3 py-2 rounded-lg"
+              >
+                Reviews
+              </Link>
+
+              <Link
+                href={`/dashboard/photos?location=${loc.name}`}
+                className="text-sm text-white bg-blue-600 px-3 py-2 rounded-lg"
+              >
+                Photos
               </Link>
             </div>
           </div>
